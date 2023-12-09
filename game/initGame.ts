@@ -147,7 +147,7 @@ const initGame = ({
 			targets: highScoreElement,
 			innerHTML: currentScore,
 			round: 1,
-			duration: 100,
+			duration: 300,
 			easing: 'easeInOutQuad',
 		})
 	}

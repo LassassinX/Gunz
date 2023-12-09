@@ -1,12 +1,10 @@
 import { getRandomFromArray, randomRange, randomRangeInt } from "../utils/functions"
 import { DiamondEnemy, TriangleEnemy, CircleEnemy, SquareEnemy, Enemy } from "../gameClasses/enemy"
-import player from "../gameClasses/player"
 import { CircularRigidBody, GameObject } from "../lib/smolGame/components"
 import getEnemySpawnLocation from "./getEnemySpawnLocation"
 import { getRandomColor } from "../gameUtils/colors"
-import { enemyShootSound } from "../gameUtils/sounds"
 
-const typeOfEnemies = ['square',]
+const typeOfEnemies = ['circle', 'square', 'triangle', 'diamond']
 const enemySpeeds= { 
 	diamond: 10,
 	triangle: 10,
