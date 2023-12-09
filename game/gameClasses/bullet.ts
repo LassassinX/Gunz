@@ -1,5 +1,5 @@
-import { DrawableGameObject } from '../lib/smolGame/components.js'
-import ParticleObject from './particleObject.js'
+import { DrawableGameObject } from '../lib/smolGame/components'
+import ParticleObject from './particleObject'
 export default class Bullet extends ParticleObject implements DrawableGameObject{
 	ctx: CanvasRenderingContext2D
 

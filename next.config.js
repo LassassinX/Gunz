@@ -8,8 +8,9 @@ nextConfig.webpack = (config, _) => {
 		test: /\.(png|jpg|gif|mp3|wav)$/,
 		type: 'asset/resource',
 	})
-
 	return config
 }
+
+nextConfig.reactStrictMode = false
 
 module.exports = nextConfig

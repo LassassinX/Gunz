@@ -1,4 +1,4 @@
-import { randomRange, getRandomFromArray } from "../assets/sounds/utils/functions"
+import { randomRange, getRandomFromArray } from "../utils/functions"
 import ExplosionParticle from "../gameClasses/explosionParticle"
 
 export default ({ctx, position, colors, startingAngle = 0, angleSpan = 360 * Math.PI / 180,

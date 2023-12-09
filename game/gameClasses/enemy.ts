@@ -1,6 +1,5 @@
 import addExplosion from "../gameFunctions/addExplosion"
-import spawnBullet from "../gameFunctions/spawnBullet"
-import { playSoundEffect } from "../lib/initCanvas"
+import playSoundEffect from "../gameFunctions/playSoundEffect"
 import { DrawableGameObject, DrawableObject, GameObject } from "../lib/smolGame/components"
 import ParticleObject from "./particleObject"
 
@@ -40,8 +39,11 @@ export class Enemy extends ParticleObject implements DrawableObject{
 	kill(soundEffect: string, volume: number) {
 		this.isAlive = false
 
-		// remove enemy
-		addExplosion({
+		// play sound
+		playSoundEffect(soundEffect, volume)
+
+		// add explosion
+		return 	addExplosion({
 			position: this.position,
 			colors: [this.color],
 			minRadius: 5,
@@ -50,10 +52,7 @@ export class Enemy extends ParticleObject implements DrawableObject{
 			maxVelocity: 5,
 			dampingAmount: 0.95,
 			ctx: this.ctx,
-		})
-	
-		// play sound
-		playSoundEffect(soundEffect, volume)
+		}) 
 	}
 }
 
@@ -90,10 +89,6 @@ export class SquareEnemy extends Enemy implements DrawableGameObject {
 		this.updatePosition()
 		this.checkBounds()
 		this.draw()
-	}
-
-	kill() {
-		
 	}
 }
 
@@ -213,10 +208,9 @@ export class TriangleEnemy extends Enemy {
 
 export class DiamondEnemy extends TriangleEnemy {
 	shootingInterval: NodeJS.Timeout | null
-	shootingSoundEffect: string
-	shootingVolume: number
+	onShoot: Function | undefined
 
-	constructor({ position, size, color, velocity, objectToPointAt, rotation, ctx, canvas, enemySpawnPadding, shootingSoundEffect, shootingVolume
+	constructor({ position, size, color, velocity, objectToPointAt, rotation, ctx, canvas, enemySpawnPadding
 	 }: {
 		position: { x: number, y: number },
 		size: number,
@@ -227,13 +221,13 @@ export class DiamondEnemy extends TriangleEnemy {
 		ctx: CanvasRenderingContext2D,
 		canvas: HTMLCanvasElement,
 		enemySpawnPadding: number,
-		shootingSoundEffect: string,
-		shootingVolume: number
 	}) {
 		super({ position, size, color, velocity, objectToPointAt, rotation, ctx, canvas, searchPadding: enemySpawnPadding })
 		this.shootingInterval = null
-		this.shootingSoundEffect = shootingSoundEffect
-		this.shootingVolume = shootingVolume
+	}
+
+	setOnShoot(onShoot: Function) {
+		this.onShoot = onShoot
 	}
 
 	draw() {
@@ -267,16 +261,7 @@ export class DiamondEnemy extends TriangleEnemy {
 			if (this.shootingInterval === null)
 				this.shootingInterval = setInterval(() => {
 					if (this.isAlive) {
-						spawnBullet({
-							isEnemy: true,
-							bulletSpawner: this,
-							bulletSpeed: 5,
-							ctx: this.ctx,
-							radius: 5,
-							shootingCoordinates: this.objectToPointAt.position,
-							soundEffect: this.shootingSoundEffect,
-							volume: this.shootingVolume,
-						})
+						this.onShoot && this.onShoot()
 					}
 				}, 1500)
 
@@ -326,5 +311,12 @@ export class CircleEnemy extends Enemy {
 		this.checkBounds()
 		this.draw()
 	}
+}
+
+export enum EnemyType {
+	SQUARE,
+	TRIANGE,
+	DIAMOND,
+	CIRCLE
 }
 

@@ -1,4 +1,4 @@
-import { getRandomFromArray, randomRange, randomRangeInt } from "../assets/sounds/utils/functions"
+import { getRandomFromArray, randomRange, randomRangeInt } from "../utils/functions"
 import { DiamondEnemy, TriangleEnemy, CircleEnemy, SquareEnemy, Enemy } from "../gameClasses/enemy"
 import player from "../gameClasses/player"
 import { CircularRigidBody, GameObject } from "../lib/smolGame/components"
@@ -6,7 +6,7 @@ import getEnemySpawnLocation from "./getEnemySpawnLocation"
 import { getRandomColor } from "../gameUtils/colors"
 import { enemyShootSound } from "../gameUtils/sounds"
 
-const typeOfEnemies = ['circle', 'square', 'triangle', 'diamond']
+const typeOfEnemies = ['square',]
 const enemySpeeds= { 
 	diamond: 10,
 	triangle: 10,
@@ -66,8 +66,6 @@ const spawnEnemy = ({ gameObjectToPointAt, canvas, position, ctx, spawnPadding, 
 				canvas: canvas,
 				ctx: ctx,
 				enemySpawnPadding: spawnPadding,
-				shootingSoundEffect: enemyShootSound,
-				shootingVolume: 0.1
 			})
 
 			enemyRigidBody = new CircularRigidBody(enemy, enemy.size)

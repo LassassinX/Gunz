@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "animate.css": "^4.1.1",
     "animejs": "^3.2.2",
     "next": "14.0.3",
     "react": "^18",

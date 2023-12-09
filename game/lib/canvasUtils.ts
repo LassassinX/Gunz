@@ -1,5 +1,5 @@
 import anime from "animejs"
-import { randomRange } from "../assets/sounds/utils/functions"
+import { randomRange } from "../utils/functions"
 
 export const blurAndShakeCanvas = ({
 	blur = 3,
@@ -28,9 +28,9 @@ export const blurAndShakeCanvas = ({
 } = {}) => {
 	if (!canvas)
 		return console.error('No canvas provided to blurAndShakeCanvas function')
-	
+
 	let shakeAmount = randomRange(shake.min, shake.max)
-	
+
 	const shakeY = randomRange(-shakeAmount, shakeAmount)
 	const shakeX = randomRange(-shakeAmount, shakeAmount)
 
@@ -69,17 +69,19 @@ export const blurAndShakeCanvas = ({
 	timeline.play();
 }
 
-export const drawDiamond = ({x, y, size, lineWidth, color, ctx}: {
+export const drawDiamond = ({ x, y, size, lineWidth, color, ctx, rotation }: {
 	x: number,
 	y: number,
 	size: number,
 	lineWidth: number,
 	color: string,
 	ctx: CanvasRenderingContext2D
+	rotation?: number
 }) => {
+	rotation = Math.PI / 4 + (rotation || 0)
 	ctx.save()
 	ctx.translate(x, y)
-	ctx.rotate(Math.PI / 4)
+	ctx.rotate(rotation)
 	ctx.beginPath()
 	ctx.rect(-size / 2, -size / 2, size, size)
 	ctx.strokeStyle = color

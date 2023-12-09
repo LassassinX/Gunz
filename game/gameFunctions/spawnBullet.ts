@@ -3,8 +3,8 @@ import { CircularRigidBody, DrawableGameObject } from "../lib/smolGame/component
 import Bullet from "../gameClasses/bullet";
 import ParticleObject from "../gameClasses/particleObject";
 import Player from "../gameClasses/player";
-import { playSoundEffect } from "../lib/initCanvas";
 import addExplosion from "./addExplosion";
+import playSoundEffect from "./playSoundEffect";
 
 export default function ({ bulletSpawner,
 	shootingCoordinates,
@@ -44,7 +44,7 @@ export default function ({ bulletSpawner,
 	playSoundEffect(soundEffect, volumne)
 
 	// add explosion
-	addExplosion({
+	const particles = addExplosion({
 		position: bulletSpawner.position,
 		colors: [bullet.color],
 		startingAngle: bullet.angle,
@@ -73,5 +73,5 @@ export default function ({ bulletSpawner,
 		}
 	})
 
-	return { bullet, bulletRigidBody }
+	return { bullet, bulletRigidBody, particles }
 }

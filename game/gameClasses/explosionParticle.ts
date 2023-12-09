@@ -20,7 +20,6 @@ class ExplosionParticle extends ParticleObject implements DrawableGameObject{
 		this.radius = radius
 		this.color = color
 		this.ctx = ctx
-		ExplosionParticle.PARTICLE_COUNT++
 	}
 	
 	draw() {
@@ -45,7 +44,6 @@ class ExplosionParticle extends ParticleObject implements DrawableGameObject{
 
 		if (this.radius <= 0) {
 			this.isAlive = false
-			ExplosionParticle.PARTICLE_COUNT--
 		}
 
 		this.draw()

@@ -10,6 +10,13 @@ import bigExplosionSound4 from '../assets/sounds/big-explosion-4.wav'
 import gameplayLoopSound from '../assets/sounds/gameplay-loop.mp3'
 import menuLoopSound from '../assets/sounds/intro-loop.mp3'
 
+const enemyDeathSounds = [
+	bigExplosionSound1,
+	bigExplosionSound2,
+	bigExplosionSound3,
+	bigExplosionSound4
+]
+
 export {
 	playerShootSound,
 	enemyShootSound,
@@ -18,6 +25,7 @@ export {
 	bigExplosionSound2,
 	bigExplosionSound3,
 	bigExplosionSound4,
+	enemyDeathSounds,
 	gameplayLoopSound,
 	menuLoopSound
 }

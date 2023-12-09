@@ -1,7 +1,6 @@
 import ParticleObject from './particleObject'
 import { DrawableGameObject } from '../lib/smolGame/components'
 import spawnBullet from '../gameFunctions/spawnBullet'
-import { ctx } from '../lib/initCanvas'
 export default class Player extends ParticleObject implements DrawableGameObject {
 	ctx: CanvasRenderingContext2D
 	canvas: HTMLCanvasElement
@@ -108,16 +107,25 @@ export default class Player extends ParticleObject implements DrawableGameObject
 		if (this.isAlive)
 			return spawnBullet({
 				bulletSpawner: this,
-				bulletSpeed: 20,
+				bulletSpeed: 10,
 				ctx: this.ctx,
 				isEnemy: false,
-				radius: 5,
+				radius: 7,
 				shootingCoordinates,
 				soundEffect,
 				volume,
 				useHueShift: true,
 			});
+
+		else {
+			return {
+				bullet: null,
+				bulletRigidBody: null,
+				particles: []
+			}
+		}
 	}
+
 	setPlayerMovement(movement: string, movementValue: boolean) {
 		Object.entries(this.movingMap).forEach(([key, value]) => {
 			if (key === movement) {

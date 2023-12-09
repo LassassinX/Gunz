@@ -1,4 +1,4 @@
-import { randomRange } from "../assets/sounds/utils/functions"
+import { randomRange } from "../utils/functions"
 
 const getEnemySpawnLocation = ({
 	canvas,

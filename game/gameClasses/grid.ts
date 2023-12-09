@@ -3,7 +3,6 @@ import { DrawableGameObject } from '../lib/smolGame/components'
 
 export default class Grid {
 	ctx: CanvasRenderingContext2D
-	numberOfParticles: number
 	gapX: number
 	gapY: number
 	particleW: number
@@ -13,6 +12,10 @@ export default class Grid {
 
 	rows: GridParticle[][]
 	columns: GridParticle[][]
+
+	rowCount: number = 0
+	columnCount: number = 0
+
 	gridPaddingX: number
 	gridPaddingY: number
 
@@ -20,7 +23,6 @@ export default class Grid {
 
 	constructor({
 		ctx,
-		numberOfParticles,
 		gapX,
 		gapY,
 		particleW,
@@ -28,7 +30,6 @@ export default class Grid {
 		color,
 	}: {
 		ctx: CanvasRenderingContext2D,
-		numberOfParticles: number,
 		gapX: number,
 		gapY: number,
 		particleW: number,
@@ -36,7 +37,6 @@ export default class Grid {
 		color: string,
 	}) {
 		this.ctx = ctx
-		this.numberOfParticles = numberOfParticles
 		this.gapX = gapX
 		this.gapY = gapY
 		this.particleW = particleW
@@ -54,7 +54,8 @@ export default class Grid {
 
 	createGrid() {
 		for (let i = this.gridPaddingY; i < this.ctx.canvas.height; i += this.gapY) {
-			const row = []
+			// const row = []
+			this.columnCount = 0
 			for (let j = this.gridPaddingX; j < this.ctx.canvas.width; j += this.gapX) {
 				const particle = new GridParticle({
 					position: { x: j, y: i },
@@ -63,45 +64,41 @@ export default class Grid {
 					color: this.color,
 					ctx: this.ctx
 				})
-				row.push(particle)
+				// row.push(particle)
 				this.particles.push(particle)
+				this.columnCount++
 			}
-			this.rows.push(row)
+			// this.rows.push(row)
+			this.rowCount++
 		}
 
-		this.columns = this.rows[0].map((_, columnIndex) =>
-			this.rows.map((row) => row[columnIndex])
-		);
+		// this.columns = this.rows[0].map((_, columnIndex) =>
+			// this.rows.map((row) => row[columnIndex])
+		// );
 	}
 
 	flash(color: string, changeColor: boolean = false) {
 		this.isFlashing = true
 		let oldColor = this.particles[0].color
 
-		const timeline = anime.timeline({
-			easing: 'easeInOutQuad',
-			duration: 100,
-			complete: () => {
-				this.isFlashing = false
-			}
-		})
+		setTimeout(() => {
+			this.isFlashing = false
+		}, 150)
 
-		for (let i = 0; i < this.particles.length; i++) {
-			const particle = this.particles[i]
-			particle.color = color
-
-			timeline.add(anime({
-				targets: particle,
-				alpha: particle.alpha < 0.4 ? 0.4 : particle.alpha,
+		this.particles.forEach((gridParticle) => {
+			gridParticle.color = color
+			anime({
+				targets: gridParticle,
+				alpha: gridParticle.alpha < 0.4 ? 0.4 : gridParticle.alpha,
+				duration: 100,
+				easing: 'easeInOutQuad',
+	
 				complete: () => {
-					if (changeColor) {
-						particle.color = oldColor
-					}
+					if (!changeColor)
+						gridParticle.color = oldColor
 				}
-			}))
-		}
-
-		timeline.play()
+			})
+		})
 	}
 }
 
