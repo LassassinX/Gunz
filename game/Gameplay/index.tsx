@@ -77,7 +77,7 @@ export default ({ mainContainerRef }: { mainContainerRef: any }) => {
 	const restartGame = () => { 
 		// @ts-ignore
 		document.getElementById('my_modal_1')?.close()
-		
+
 		setDummyState((state) => state + 1)
 	}
 
@@ -98,12 +98,12 @@ export default ({ mainContainerRef }: { mainContainerRef: any }) => {
 			<div className={`modal-box max-w-3xl bg-[#030303] border-white border-2 space-y-6 text-center ${highScoreFont.className}`}>
 				<h3 className={`font-bold text-4xl whitespace-nowrap`}>You Have <span className='text-red-600'>PERISHED</span></h3>
 				<div className={`flex justify-center text-3xl font-extrabold`}>Highscore <span className='divider divider-horizontal'></span> <span className='text-red-600' id='highScore'></span></div>
-				<div>
-					<input type="text" placeholder="Be remembered by..." className="input input-bordered w-full bg-black max-w-xs" />
-				</div>
-
+				{/* <div> */}
+					{/* <input type="text" placeholder="Be remembered by..." className="input input-bordered w-full bg-black max-w-xs" /> */}
+				{/* </div> */}
+				
 				<form method="dialog" className="flex justify-center gap-2">
-					<button className="border-2 border-white text-white rounded p-4 py-2 transition-all hover:border-red-600 hover:text-red-600">Submit Score</button>
+					{/* <button className="border-2 border-white text-white rounded p-4 py-2 transition-all hover:border-red-600 hover:text-red-600">Submit Score</button> */}
 					<button className="border-2 border-white text-white rounded p-4 py-2 transition-all hover:border-red-600 hover:text-red-600" onClick={restartGame}>Retry</button>
 				</form>
 			</div>

@@ -158,10 +158,10 @@ export default () => {
 						<div className="divider divider-horizontal">
 						</div>
 						<div className="text-xl">
-							Your <span className="text-red-600">health</span> is on the top left corner.
+							Your <span className="text-red-600">health</span> is on the top right corner.
 							<br />
 							<br />
-							Your <span className="text-red-600">score</span> is on the top right corner.
+							Your <span className="text-red-600">score</span> is on the top left corner.
 							<br />
 							<br />
 							Make sure nothing moves.
