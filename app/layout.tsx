@@ -1,10 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import Preload from '@/preload'
-
-
-// preload sounds
+import Preload from '@/game/Preload'
 
 const inter = Inter({ subsets: ['latin'] })
 

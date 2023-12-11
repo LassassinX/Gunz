@@ -1,5 +1,5 @@
 "use client"
-import * as sounds from "./game/gameUtils/sounds"
+import * as sounds from "./gameUtils/sounds"
 
 export default () => {
 	return <>
