@@ -8,8 +8,11 @@ import bigExplosionSound3 from '../assets/sounds/big-explosion-3.wav'
 import bigExplosionSound4 from '../assets/sounds/big-explosion-4.wav'
 
 import gameplayLoopSound from '../assets/sounds/gameplay-loop.mp3'
-import menuLoopSound from '../assets/sounds/intro-loop.mp3'
-
+import menuLoopSound from '../assets/sounds/intro-loop.wav'
+import menuOpenBoxSound from '../assets/sounds/menu-open-box.mp3'
+import menuTextGlitchSound from '../assets/sounds/menu-text-glitch.wav'
+import startGameSound from '../assets/sounds/start-game.mp3'
+ 
 const enemyDeathSounds = [
 	bigExplosionSound1,
 	bigExplosionSound2,
@@ -27,5 +30,8 @@ export {
 	bigExplosionSound4,
 	enemyDeathSounds,
 	gameplayLoopSound,
-	menuLoopSound
+	menuLoopSound,
+	menuOpenBoxSound,
+	menuTextGlitchSound,
+	startGameSound
 }

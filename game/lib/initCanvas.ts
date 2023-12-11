@@ -1,18 +1,13 @@
 export default (canvas: HTMLCanvasElement) => {
 	const ctx = canvas.getContext('2d');
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
+	const maxWidth = 2600, maxHeight = 1100;
 
-	function setWidthAndHeight({
-		innerWidth,
-		innerHeight
-	}: {
-		innerWidth: number,
-		innerHeight: number
-	}) {
-		canvas.width = innerWidth;
-		canvas.height = innerHeight;
+	function setWidthAndHeight() {
+		canvas.width = window.innerWidth > maxWidth ? maxWidth : window.innerWidth;;
+		canvas.height = window.innerHeight > maxHeight ? maxHeight : window.innerHeight;
 	}
+
+	setWidthAndHeight();
 
 	function renderLoop(externalFunction?: Function) {
 		if (externalFunction) externalFunction();
@@ -25,16 +20,15 @@ export default (canvas: HTMLCanvasElement) => {
 		if (!resizeTimeout) {
 			resizeTimeout = setTimeout(() => {
 				resizeTimeout = undefined;
-				canvas.width = window.innerWidth;
-				canvas.height = window.innerHeight;
+				setWidthAndHeight()
 			}, 100);
 		}
 	})
 
-	return { 
-		canvas, 
-		ctx, 
-		renderLoop, 
+	return {
+		canvas,
+		ctx,
+		renderLoop,
 		setWidthAndHeight
 	}
 }

@@ -1,25 +1,25 @@
+import useGameStore from '../useGameStore';
 
-import Player from './gameClasses/player';
-import Healthbar from './gameClasses/healthbar';
-import { CircularRigidBody, GameObject } from './lib/smolGame/components';
-
-import * as Sounds from './gameUtils/sounds';
-import * as CanvasUtils from './lib/canvasUtils';
-import playSoundEffect from './gameFunctions/playSoundEffect';
-import Grid from './gameClasses/grid';
-import { CircleEnemy, DiamondEnemy, Enemy, EnemyType, SquareEnemy, TriangleEnemy } from './gameClasses/enemy';
+import Player from '../gameClasses/player';
+import Healthbar from '../gameClasses/healthbar';
+import { CircularRigidBody, GameObject } from '../lib/smolGame/components';
+ 
+import * as Sounds from '../gameUtils/sounds';
+import * as CanvasUtils from '../lib/canvasUtils';
+import playSoundEffect from '../gameFunctions/playSoundEffect';
+import Grid from '../gameClasses/grid';
+import { CircleEnemy, DiamondEnemy, Enemy, EnemyType, SquareEnemy, TriangleEnemy } from '../gameClasses/enemy';
 import anime from 'animejs';
-import Bullet from './gameClasses/bullet';
-import addExplosion from './gameFunctions/addExplosion';
-import { getRandomFromArray } from './utils/functions';
-import FrameCounter from './gameClasses/frameCounter';
-import spawnEnemy from './gameFunctions/spawnEnemy';
-import ExplosionParticle from './gameClasses/explosionParticle';
-import spawnBullet from './gameFunctions/spawnBullet';
-import Score from './gameClasses/score';
+import Bullet from '../gameClasses/bullet';
+import addExplosion from '../gameFunctions/addExplosion';
+import { getRandomFromArray } from '../utils/functions'; 
+import FrameCounter from '../gameClasses/frameCounter';
+import spawnEnemy from '../gameFunctions/spawnEnemy';
+import ExplosionParticle from '../gameClasses/explosionParticle';
+import spawnBullet from '../gameFunctions/spawnBullet';
+import Score from '../gameClasses/score';
 
-// score
-let currentScore = 0
+// cleanup function
 const ENEMY_HIT_SCORE = 10
 const killScores: {
 	[key in EnemyType]: number
@@ -37,17 +37,9 @@ const getEnemyType = (enemy: Enemy) => {
 	if (enemy instanceof SquareEnemy) return EnemyType.SQUARE
 }
 
-const gameObjects: GameObject[] = []
-const rigidBodies: CircularRigidBody[] = []
-const playerDamageColor = '#ff2a6d'
-const MAX_PARTICLE_COUNT = 100
+let playerDamageColor = '#ff2a6d'
+let MAX_PARTICLE_COUNT = 100
 
-let player: Player;
-let playerRigidBody: CircularRigidBody;
-let healthbar: Healthbar;
-let grid: Grid;
-
-let globalVolume = 1
 let cursorMouseX: number | null
 let cursorMouseY: number | null
 let cursorRotation = 0
@@ -64,26 +56,23 @@ let eqFactors = {
 	equalizerAlpha: 0.12,
 }
 
+// score
 const initGame = ({
 	canvas,
 	ctx,
 	renderLoop,
-	setWidthAndHeight,
 	highScoreElement,
+	mainContainerElement,
 	scoreFont: localFont,
+	globalVolume,
 }: {
+	mainContainerElement: HTMLElement,
 	canvas: HTMLCanvasElement,
 	ctx: CanvasRenderingContext2D,
 	renderLoop: (callback: () => void) => void,
 	highScoreElement: HTMLElement,
 	scoreFont: string,
-	setWidthAndHeight: ({
-		innerWidth,
-		innerHeight
-	}: {
-		innerWidth: number,
-		innerHeight: number
-	}) => void
+	globalVolume: number,
 }) => {
 	// functions
 	const drawCursor = () => {
@@ -162,6 +151,50 @@ const initGame = ({
 		addExplosionToGameObjects([particles])
 	}
 
+	const handleCanvasMouseMove = (e: MouseEvent) => {
+		cursorMouseX = e.clientX - canvas.getBoundingClientRect().left
+		cursorMouseY = e.clientY - canvas.getBoundingClientRect().top
+	}
+
+	const handleCanvasMouseDown = () => {
+		if (!cursorMouseX || !cursorMouseY) return
+
+		// player shoots
+		const { bullet, bulletRigidBody, particles }: {
+			bullet: Bullet | null,
+			bulletRigidBody: CircularRigidBody | null,
+			particles: ExplosionParticle[]
+		} = player.shoot({
+			shootingCoordinates: {
+				x: cursorMouseX,
+				y: cursorMouseY,
+			},
+			soundEffect: Sounds.playerShootSound,
+			volume: globalVolume,
+		})
+
+		if (bullet && bulletRigidBody) {
+			gameObjects.push(bullet)
+			rigidBodies.push(bulletRigidBody)
+			addExplosionToGameObjects([particles])
+		}
+	}
+
+	// style main container
+	mainContainerElement.style.userSelect = 'none'
+	mainContainerElement.style.cursor = 'none'
+
+	// reset game
+	let currentScore = 0
+
+	let gameObjects: GameObject[] = []
+	let rigidBodies: CircularRigidBody[] = []
+
+	let player: Player;
+	let playerRigidBody: CircularRigidBody;
+	let healthbar: Healthbar;
+	let grid: Grid;
+
 	// lets create the player
 	player = new Player({
 		canvas,
@@ -176,7 +209,21 @@ const initGame = ({
 			healthbar.decrement()
 		},
 		onDeath: () => {
-			playSoundEffect(Sounds.bigExplosionSound2, globalVolume + 0.1)
+			playSoundEffect(Sounds.bigExplosionSound2, globalVolume + 0.1);
+			(document.querySelector('#my_modal_1') as any)?.showModal()
+			anime({
+				targets: gameplayLoopAudio,
+				volume: 0.2,
+				duration: 500,
+				easing: 'easeInOutQuad',
+			})
+
+			// reset styling on main container
+			mainContainerElement.style.userSelect = 'auto'
+			mainContainerElement.style.cursor = 'auto'
+
+			// highscore
+			document.querySelector('#highScore')!.innerHTML = currentScore.toString()
 		}
 	})
 
@@ -229,36 +276,11 @@ const initGame = ({
 	const frameCounter = new FrameCounter()
 
 	// add event listeners
-	canvas.addEventListener('mousedown', (e) => {
-		if (!cursorMouseX || !cursorMouseY) return
+	canvas.addEventListener('mousedown', handleCanvasMouseDown)
+	canvas.addEventListener('mousemove', handleCanvasMouseMove)
 
-		// player shoots
-		const { bullet, bulletRigidBody, particles }: {
-			bullet: Bullet | null,
-			bulletRigidBody: CircularRigidBody | null,
-			particles: ExplosionParticle[]
-		} = player.shoot({
-			shootingCoordinates: {
-				x: cursorMouseX,
-				y: cursorMouseY,
-			},
-			soundEffect: Sounds.playerShootSound,
-			volume: globalVolume,
-		})
-
-		if (bullet && bulletRigidBody) {
-			gameObjects.push(bullet)
-			rigidBodies.push(bulletRigidBody)
-			addExplosionToGameObjects([particles])
-		}
-	})
-
-	canvas.addEventListener('mousemove', (e) => {
-		cursorMouseX = e.clientX
-		cursorMouseY = e.clientY
-	})
-
-	// animation loop  
+	// animation loop
+	let animationId = 0;
 	const animation = () => {
 		ctx.fillStyle = `rgba(5, 5, 5, 0.5)`
 		ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -501,10 +523,34 @@ const initGame = ({
 		frameCounter.incrementFrame()
 
 		drawCursor()
+
+		animationId = requestAnimationFrame(animation)
 	}
 
 	// finally start the game
-	renderLoop(animation)
+	animation()
+
+	// cleanup function 
+	return () => {
+		cancelAnimationFrame(animationId)
+		currentScore = 0
+		gameplayLoopAudio.pause()
+		gameplayLoopAudio.currentTime = 0
+		ExplosionParticle.PARTICLE_COUNT = 0
+
+		gameObjects.forEach((gameObject, i) => {
+			gameObject.isAlive = false
+		})
+
+		rigidBodies.forEach((rigidBody, i) => {
+			rigidBody.gameObject.isAlive = false
+		})
+		
+
+		// get rid of the event listeners
+		canvas.removeEventListener('mousemove', handleCanvasMouseMove)
+		canvas.removeEventListener('mousedown', handleCanvasMouseDown)
+	}
 }
 
 export default initGame

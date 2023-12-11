@@ -1,81 +1,60 @@
-"use client";
-import React, { useEffect, useRef } from 'react';
-import localFont from 'next/font/local'
+"use client"
+import { useEffect, useMemo, useRef, useState } from 'react';
+import MainMenu from './MainMenu'
+import { gameplayLoopSound, menuLoopSound } from './gameUtils/sounds';
 
-import initCanvas from './lib/initCanvas';
-import initGame from './initGame';
+// @ts-ignore
+import { Gapless5, CrossfadeShape } from "@regosen/gapless-5";
 
-const highScoreFont = localFont({ src: './assets/fonts/Ofarea-Regular.ttf' })
-const scorePopupFont = localFont({ src: './assets/fonts/RealYoung-6XLM.ttf' })
+import useGameStore from './useGameStore';
+
+import anime from 'animejs';
+import Gameplay from './Gameplay';
 
 export default () => {
-	const canvasRef = useRef(null)
-	const fpsCounterRef = useRef(null)
-	const highScoreRef = useRef(null)
+	const mainContainerRef = useRef(null)
+
+	const startGame = useGameStore(state => state.startGame)
+	const globalVolume = useGameStore(state => state.globalVolume)
+
+	const player = useMemo(() => new Gapless5({
+		loop: true,
+		volume: 0,
+		singleMode: true,
+		crossfadeShape: CrossfadeShape.EqualPower
+	}), [])
 
 	useEffect(() => {
-		if (!canvasRef.current) return
 
-		const {
-			canvas,
-			ctx,
-			renderLoop,
-			setWidthAndHeight
-		} = initCanvas(canvasRef.current)
+		player.addTrack(menuLoopSound);
+		player.play();
 
-		setWidthAndHeight(window)
-
-		if (!canvas) return
-		if (!ctx) return
-		if (!highScoreRef.current) return
-
-		initGame({
-			canvas,
-			ctx,
-			renderLoop,
-			setWidthAndHeight,
-			highScoreElement: highScoreRef.current as HTMLSpanElement,
-			scoreFont: scorePopupFont.style.fontFamily,
+		anime({
+			targets: player,
+			volume: [0, globalVolume],
+			duration: 6000,
+			easing: 'cubicBezier(1.000, -0.130, 0.730, 1.100)',
 		})
 
-		// set fpsCounter
-		let frameCount = 0;
-		let lastTime: any;
-
-		function updateFPS() {
-			if (!fpsCounterRef.current) return
-
-			const now = performance.now();
-			const elapsed = now - lastTime;
-
-			if (elapsed >= 1000) {
-				const fps = Math.round((frameCount * 1000) / elapsed);
-				(fpsCounterRef.current as HTMLDivElement).innerText = 'FPS: ' + fps;
-
-				frameCount = 0;
-				lastTime = now;
-			}
-
-			frameCount++;
-
-			requestAnimationFrame(updateFPS);
+		return () => {
+			player.stop();
+			player.removeAllTracks();
 		}
-
-		// Initial setup
-		lastTime = performance.now();
-		updateFPS();
 	}, [])
 
-	return <div className={highScoreFont.className}>
-		<div ref={fpsCounterRef} className='fixed text-lg text-white bg-black p-1 rounded pointer-events-none select-none bottom-[10px] right-[10px] z-10'>
-		</div>
-		<div className='fixed text-lg bg-black opacity-80 rounded p-2 m-4 z-10 pointer-events-none select-none'>
-			<span ref={highScoreRef}>
-				0
-			</span>
-		</div>
-		<canvas className='cursor-none' ref={canvasRef}>
-		</canvas>
-	</div>
+	useEffect(() => {
+		if (startGame) {
+			player.stop()
+		} else {
+			player.gotoTrack(0)
+		}
+	}, [startGame])
 
-} 
+
+
+	return <>
+		<main className={`flex flex-col h-[100svh] justify-center items-center`} ref={mainContainerRef}>
+			{startGame ? <Gameplay mainContainerRef={mainContainerRef}/> : <MainMenu />}
+		</main>
+	</>
+}
