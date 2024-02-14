@@ -485,7 +485,7 @@ const initGame = ({
 			}
 		})
 
-		frameCounter.at(2500, () => {
+		frameCounter.at(1200, () => {
 			const { enemy, enemyRigidBody }: {
 				enemy: Enemy,
 				enemyRigidBody: CircularRigidBody
